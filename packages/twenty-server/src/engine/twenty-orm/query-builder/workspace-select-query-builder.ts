@@ -834,7 +834,8 @@ export class WorkspaceSelectQueryBuilder implements WhereExpressionLike {
         this.whereClauses.push({
           operator,
           sql: isNegatedWhereFactoryLike(condition)
-            ? `NOT (${nestedSql})`
+            ? // SQL three-valued logic: NOT(NULL) is NULL and would drop rows with a NULL column
+              `(NOT (${nestedSql}) OR (${nestedSql}) IS NULL)`
             : `(${nestedSql})`,
         });
       }
